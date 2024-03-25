@@ -184,7 +184,7 @@ class Trainer:
                 ax.legend(loc="upper right")
                 
             plt.tight_layout()
-            plt.save(f'{self.path_to_log}/plot-{self.model_name}.jpg')
+            plt.savefig(f'{self.path_to_log}/plot-{self.model_name}.jpg')
             # plt.show()
             
     def load_predtrain_model(self,
@@ -195,7 +195,7 @@ class Trainer:
     def _save_train_history(self):
         """writing model weights and training logs to files."""
         torch.save(self.net.state_dict(),
-                   f"saved_model/lase-epoch-{self.model_name}.pth")
+                   f"saved_model/latest-{self.model_name}.pth")
 
         logs_ = [self.losses, self.dice_scores, self.jaccard_scores]
         log_names_ = ["_loss", "_dice", "_jaccard"]
