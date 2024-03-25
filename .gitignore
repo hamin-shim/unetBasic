@@ -1,1 +1,4 @@
-/data
+/brats_data
+*.pth
+*.csv
+*.pyc
