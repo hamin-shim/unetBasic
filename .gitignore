@@ -4,4 +4,6 @@ saved_model
 *.pth
 *.csv
 *.pyc
-logs/train_log(test).txt
+*.html
+*.pdf
+*.txt

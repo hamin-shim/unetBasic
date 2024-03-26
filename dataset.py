@@ -6,13 +6,14 @@ from skimage.transform import resize
 from utils import get_augmentations
 
 class BratsDataset(Dataset):
-    def __init__(self, data_path, phase: str="train",ids: list=[], is_resize: bool=True):
+    def __init__(self, data_path, phase: str="train",ids: list=[], is_resize: bool=True, resize_info: list=[]):
         self.data_path = data_path
         self.phase = phase
         self.ids = ids
         self.augmentations = get_augmentations(phase)
         self.data_types = ['-t1c.nii.gz', '-t1n.nii.gz','-t2f.nii.gz']
         self.is_resize = is_resize
+        self.resize_info = resize_info
         
     def __len__(self):
         return len(self.ids) 
@@ -77,7 +78,9 @@ class BratsDataset(Dataset):
         return (data - data_min) / (np.max(data) - data_min)
     
     def resize(self, data: np.ndarray):
-        data = resize(data, (50, 120, 120), preserve_range=True)
+        start_num, end_num, interval = self.resize_info
+        data = data[np.arange(start_num, end_num, interval)] # (155,240,240) -> (??,240,240)
+        data = resize(data, (data.shape[0], 120, 120), preserve_range=True) # (??,240,240) -> (??, 120, 120)
         return data
     def preprocess_mask_labels(self, mask: np.ndarray):
 

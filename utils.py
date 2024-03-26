@@ -16,11 +16,12 @@ def get_augmentations(phase):
 def get_dataloader(
     dataset: torch.utils.data.Dataset,
     phase: str,
+    resize_info: list,
     batch_size: int = 4,
     num_workers: int = 4 ):
     
     ids = os.listdir(os.path.join("brats_data",phase))
-    ds = dataset('brats_data',phase, ids, True)
+    ds = dataset(data_path='brats_data',phase=phase, ids=ids, is_resize=True,resize_info=resize_info)
     """
     DataLoader iteratively goes through every id in the df & gets all the individual tuples for individual ids & appends all of them 
     like this : 
@@ -248,3 +249,29 @@ def jaccard_coef_metric_per_classes(probabilities: np.ndarray, # output of the m
                 scores[classes[class_]].append((intersection + eps) / union)
 
     return scores
+def preprocess_mask_labels(mask):
+    print("before preprocess", mask.shape)
+    # whole tumour
+    mask_WT = mask.copy()
+    mask_WT[mask_WT == 1] = 1
+    mask_WT[mask_WT == 2] = 1
+    mask_WT[mask_WT == 3] = 1
+    # include all tumours 
+
+    # NCR / NET - LABEL 1
+    mask_TC = mask.copy()
+    mask_TC[mask_TC == 1] = 1
+    mask_TC[mask_TC == 2] = 0
+    mask_TC[mask_TC == 3] = 1
+    # exclude 2 / 4 labelled tumour 
+
+    # ET - LABEL 4 
+    mask_ET = mask.copy()
+    mask_ET[mask_ET == 1] = 0
+    mask_ET[mask_ET == 2] = 0
+    mask_ET[mask_ET == 3] = 1
+    # exclude 2 / 1 labelled tumour 
+
+    # mask = np.stack([mask_WT, mask_TC, mask_ET, mask_ED])
+    mask = np.stack([mask_WT, mask_TC, mask_ET])
+    return mask

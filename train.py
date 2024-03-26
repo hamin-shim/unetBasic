@@ -41,6 +41,7 @@ class Trainer:
                  num_epochs: int,
                  path_to_log: str,
                  model_name:str,
+                 resize_info: list,
                  display_plot: bool = True,
                 ):
 
@@ -65,6 +66,7 @@ class Trainer:
                 dataset = dataset,
                 phase = phase,
                 batch_size = batch_size,
+                resize_info = resize_info,
                 num_workers = 4
             )
             for phase in self.phases
@@ -121,8 +123,8 @@ class Trainer:
                     self.optimizer.zero_grad()
                     
             running_loss += loss.item()
-            with open(f'{self.path_to_log}/train_log({self.model_name}).txt','a') as f:
-                f.write(f"[{itr}/{total_batches}] running loss of epoch {epoch} is : {running_loss}\n") 
+            # with open(f'{self.path_to_log}/train_log({self.model_name}).txt','a') as f:
+            #     f.write(f"[{itr}/{total_batches}] running loss of epoch {epoch} is : {running_loss}\n") 
             # meter.update stores running_loss for each iteration in one epoch in a list to visualize in graph 
             meter.update(logits.detach().cpu(),
                          targets.detach().cpu()
