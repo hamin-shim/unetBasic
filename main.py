@@ -7,7 +7,7 @@ import json
 from time import time
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = UNet3d(in_channels = 3, n_classes = 3, n_channels = 32).to(device)
+model = UNet3d(in_channels = 4, n_classes = 3, n_channels = 24).to(device)
 model_name = input('Model name to save:')
 epoch = int(input('Epoch: '))
 batch_size = int(input('Batch size: '))
@@ -21,7 +21,7 @@ trainer = Trainer(net=model,
                   dataset=BratsDataset,
                   criterion=BCEDiceLoss(),
                   lr=5e-4,
-                  accumulation_steps=4,
+                  accumulation_steps=6,
                   batch_size=batch_size,
                   num_epochs=epoch,
                   path_to_log= 'logs', model_name = model_name, resize_info = resize_info)

@@ -98,7 +98,7 @@ class Trainer:
         
     def _do_epoch(self, epoch: int, phase: str):
         with open(f'{self.path_to_log}/train_log({self.model_name}).txt','a') as f:
-            f.write(f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}")
+            f.write(f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}\n")
 
         self.net.train() if phase == "train" else self.net.eval()
         meter = Meter()
