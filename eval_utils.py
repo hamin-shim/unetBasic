@@ -37,7 +37,8 @@ def compute_dice(im1, im2, empty_value=1.0):
     im2 = np.asarray(im2).astype(bool)
 
     if im1.shape != im2.shape:
-        raise ValueError("Shape mismatch: im1 and im2 must have the same shape.")
+        raise ValueError(
+            "Shape mismatch: im1 and im2 must have the same shape.")
 
     im_sum = im1.sum() + im2.sum()
     if im_sum == 0:
@@ -118,8 +119,10 @@ def compute_absolute_lesion_difference(ground_truth, prediction, connectivity=26
     ground_truth = np.asarray(ground_truth).astype(bool)
     prediction = np.asarray(prediction).astype(bool)
 
-    _, ground_truth_numb_lesion = cc3d.connected_components(ground_truth, connectivity=connectivity, return_N=True)
-    _, prediction_numb_lesion = cc3d.connected_components(prediction, connectivity=connectivity, return_N=True)
+    _, ground_truth_numb_lesion = cc3d.connected_components(
+        ground_truth, connectivity=connectivity, return_N=True)
+    _, prediction_numb_lesion = cc3d.connected_components(
+        prediction, connectivity=connectivity, return_N=True)
     abs_les_diff = abs(ground_truth_numb_lesion - prediction_numb_lesion)
 
     return abs_les_diff
@@ -188,7 +191,8 @@ def compute_lesion_f1_score(ground_truth, prediction, empty_value=1.0, connectiv
 
     # Define case when both images are empty.
     if tp + fp + fn == 0:
-        _, N = cc3d.connected_components(ground_truth, connectivity=connectivity, return_N=True)
+        _, N = cc3d.connected_components(
+            ground_truth, connectivity=connectivity, return_N=True)
         if N == 0:
             f1_score = empty_value
     else:
