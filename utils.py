@@ -265,7 +265,7 @@ def preprocess_mask_labels(mask):
     mask_TC[mask_TC == 3] = 1
     # exclude 2 / 4 labelled tumour 
 
-    # ET - LABEL 4 
+    # ET - LABEL 3
     mask_ET = mask.copy()
     mask_ET[mask_ET == 1] = 0
     mask_ET[mask_ET == 2] = 0

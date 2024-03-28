@@ -104,7 +104,6 @@ class Trainer:
         meter = Meter()
         dataloader = self.dataloaders[phase]
         total_batches = len(dataloader)
-        print("total batch num:",total_batches)
         running_loss = 0.0 
         self.optimizer.zero_grad()
         for itr, data_batch in tqdm(enumerate(dataloader), total=total_batches, desc=f'epoch {epoch}'):
