@@ -47,13 +47,13 @@ class BratsDataset(Dataset):
         if self.phase != "test":
             mask_path = os.path.join(
                 self.data_path, self.phase, id_, id_+'-seg.nii.gz')
-            mask = self.load_img(mask_path)
+            mask = self.load_img(mask_path)  # (240,240,155), data:0~3
+            mask = mask.astype(np.uint8)
 
             if self.is_resize:
+                # (155,240,240) -> (??,240,240) -> (3,??,240,240) -> (3,??,120,120)
                 mask = mask.transpose(2, 0, 1)  # mask.shape = (155,240,240)
-                mask = self.resize(mask)
-            mask = mask.astype(np.uint8)
-            mask = self.preprocess_mask_labels(mask)
+                mask = self.resize_mask(mask)
             augmented = self.augmentations(image=img.astype(np.float32),
                                            mask=mask.astype(np.float32))
             # Several augmentations / transformations like flipping, rotating, padding will be applied to both the images
@@ -87,6 +87,18 @@ class BratsDataset(Dataset):
         data = data[np.arange(start_num, end_num, interval)]
         # (??,240,240) -> (??, 120, 120)
         data = resize(data, (data.shape[0], 120, 120), preserve_range=True)
+        return data
+
+    def resize_mask(self, data: np.ndarray):
+        # Flow : (155,240,240) -> (??,240,240) -> (3,??,240,240) -> (3,??,120,120)
+        start_num, end_num, interval = self.resize_info
+        # (155,240,240) -> (??,240,240)
+        _data = data[np.arange(start_num, end_num, interval)]
+        # (??,240,240) -> (3,??,240,240)
+        data = self.preprocess_mask_labels(_data)
+        # (3,??,240,240) -> (3,??, 120, 120)
+        data = resize(
+            data, (data.shape[0], data.shape[1], 120, 120), preserve_range=True)
         return data
 
     def preprocess_mask_labels(self, mask: np.ndarray):
