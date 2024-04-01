@@ -12,6 +12,7 @@ class BratsDataset(Dataset):
         self.phase = phase
         self.ids = ids
         self.augmentations = get_augmentations(phase)
+        # self.data_types = ['-t1c.nii.gz', '-t1n.nii.gz', '-t2f.nii.gz']
         self.data_types = ['-t1n.nii.gz',
                            '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
         self.is_resize = is_resize
