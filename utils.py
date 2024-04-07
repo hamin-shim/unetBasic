@@ -18,12 +18,12 @@ def get_augmentations(phase):
 def get_dataloader(
         dataset: torch.utils.data.Dataset,
         phase: str,
-        resize_info: list,
+        resize_info: list, img_width: int, data_type: list,
         batch_size: int = 4,
         num_workers: int = 4):
 
     ids = os.listdir(os.path.join("brats_data", phase))
-    ds = dataset(data_path='brats_data', phase=phase, ids=ids,
+    ds = dataset(data_path='brats_data', data_type=data_type, phase=phase, ids=ids, img_width=img_width,
                  is_resize=True, resize_info=resize_info)
     """
     DataLoader iteratively goes through every id in the df & gets all the individual tuples for individual ids & appends all of them 

@@ -7,16 +7,17 @@ from utils import get_augmentations
 
 
 class BratsDataset(Dataset):
-    def __init__(self, data_path, phase: str = "train", ids: list = [], is_resize: bool = True, resize_info: list = []):
+    def __init__(self, data_path, data_type: list = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz'], phase: str = "train", ids: list = [], img_width=120, is_resize: bool = True, resize_info: list = []):
         self.data_path = data_path
         self.phase = phase
         self.ids = ids
         self.augmentations = get_augmentations(phase)
-        # self.data_types = ['-t1c.nii.gz', '-t1n.nii.gz', '-t2f.nii.gz']
-        self.data_types = ['-t1n.nii.gz',
-                           '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
+        self.data_types = data_type
+        # self.data_types = ['-t1n.nii.gz',
+        #                    '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
         self.is_resize = is_resize
         self.resize_info = resize_info
+        self.img_width = img_width
 
     def __len__(self):
         return len(self.ids)
@@ -44,7 +45,8 @@ class BratsDataset(Dataset):
         # stacking all the t1 , t1ce , t2 flair files of a single ID in a stack
         img = np.stack(images)
 
-        if self.phase != "test":
+        if self.phase != "":
+            # if self.phase != "test":
             mask_path = os.path.join(
                 self.data_path, self.phase, id_, id_+'-seg.nii.gz')
             mask = self.load_img(mask_path)  # (240,240,155), data:0~3
@@ -86,7 +88,8 @@ class BratsDataset(Dataset):
         # (155,240,240) -> (??,240,240)
         data = data[np.arange(start_num, end_num, interval)]
         # (??,240,240) -> (??, 120, 120)
-        data = resize(data, (data.shape[0], 120, 120), preserve_range=True)
+        data = resize(
+            data, (data.shape[0], self.img_width, self.img_width), preserve_range=True)
         return data
 
     def resize_mask(self, data: np.ndarray):
@@ -98,7 +101,7 @@ class BratsDataset(Dataset):
         data = self.preprocess_mask_labels(_data)
         # (3,??,240,240) -> (3,??, 120, 120)
         data = resize(
-            data, (data.shape[0], data.shape[1], 120, 120), preserve_range=True)
+            data, (data.shape[0], data.shape[1], self.img_width, self.img_width), preserve_range=True)
         return data
 
     def preprocess_mask_labels(self, mask: np.ndarray):

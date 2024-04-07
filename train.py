@@ -39,11 +39,13 @@ class Trainer:
                  criterion: nn.Module,
                  lr: float,
                  accumulation_steps: int,
+                 data_type: list,
                  batch_size: int,
                  num_epochs: int,
                  path_to_log: str,
                  model_name: str,
                  resize_info: list,
+                 img_width: int,
                  display_plot: bool = True,
                  ):
         """Initialization."""
@@ -61,13 +63,14 @@ class Trainer:
         self.model_name = model_name
         self.phases = ["train", "val"]
         self.num_epochs = num_epochs
-
+        self.best_epoch = 0
         self.dataloaders = {
             phase: get_dataloader(
-                dataset=dataset,
+                dataset=dataset, data_type=data_type,
                 phase=phase,
                 batch_size=batch_size,
                 resize_info=resize_info,
+                img_width=img_width,
                 num_workers=4
             )
             for phase in self.phases
@@ -108,7 +111,7 @@ class Trainer:
         total_batches = len(dataloader)
         running_loss = 0.0
         self.optimizer.zero_grad()
-        for itr, data_batch in tqdm(enumerate(dataloader), total=total_batches, desc=f'epoch {epoch}'):
+        for itr, data_batch in tqdm(enumerate(dataloader), total=total_batches, desc=f'epoch {epoch}({phase})'):
             images, targets = data_batch['image'], data_batch['mask']
             # BCEDiceLoss & raw prediction( logits ) are calculated
             loss, logits = self._compute_loss_and_outputs(images, targets)
@@ -141,7 +144,7 @@ class Trainer:
         return epoch_loss
 
     def run(self):
-        for epoch in tqdm(range(self.num_epochs), desc='Train: '):
+        for epoch in tqdm(range(self.num_epochs), desc=self.model_name):
             self._do_epoch(epoch, "train")
             with torch.no_grad():
                 val_loss = self._do_epoch(epoch, "val")
@@ -154,8 +157,8 @@ class Trainer:
                 print(f"\n{'#'*20}\nSaved new checkpoint\n{'#'*20}\n")
                 self.best_loss = val_loss
                 torch.save(self.net.state_dict(),
-                           f"saved_model/best-{self.model_name}.pth")
-            print()
+                           f"models/{self.model_name}/best-{self.model_name}.pth")
+                self.best_epoch = epoch
         self._save_train_history()
 
     def _plot_train_history(self):
@@ -189,7 +192,8 @@ class Trainer:
                 ax.legend(loc="upper right")
 
             plt.tight_layout()
-            plt.savefig(f'{self.path_to_log}/plot-{self.model_name}.jpg')
+            plt.savefig(
+                f'models/{self.model_name}/plots/train_scores({self.model_name}).jpg')
             # plt.show()
 
     def load_predtrain_model(self,
@@ -200,7 +204,7 @@ class Trainer:
     def _save_train_history(self):
         """writing model weights and training logs to files."""
         torch.save(self.net.state_dict(),
-                   f"saved_model/latest-{self.model_name}.pth")
+                   f"models/{self.model_name}/latest-{self.model_name}.pth")
 
         logs_ = [self.losses, self.dice_scores, self.jaccard_scores]
         log_names_ = ["_loss", "_dice", "_jaccard"]
