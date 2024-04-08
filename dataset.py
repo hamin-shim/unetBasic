@@ -45,7 +45,7 @@ class BratsDataset(Dataset):
         # stacking all the t1 , t1ce , t2 flair files of a single ID in a stack
         img = np.stack(images)
 
-        if self.phase != "":
+        if self.phase != "test":
             # if self.phase != "test":
             mask_path = os.path.join(
                 self.data_path, self.phase, id_, id_+'-seg.nii.gz')
@@ -67,11 +67,24 @@ class BratsDataset(Dataset):
                 "image": img,
                 "mask": mask,
             }
+        else:
+            mask_path = os.path.join(
+                self.data_path, self.phase, id_, id_+'-seg.nii.gz')
+            mask = self.load_img(mask_path)  # (240,240,155), data:0~3
+            mask = mask.astype(np.uint8)
+            mask = mask.transpose(2, 0, 1)  # mask.shape = (155,240,240)
+            mask = self.preprocess_mask_labels(mask)
+            augmented = self.augmentations(image=img.astype(np.float32),
+                                           mask=mask.astype(np.float32))
+            # Several augmentations / transformations like flipping, rotating, padding will be applied to both the images
+            img = augmented['image']
+            mask = augmented['mask']
 
-        return {
-            "Id": id_,
-            "image": img,
-        }
+            return {
+                "Id": id_,
+                "image": img,
+                "mask": mask,
+            }
 
     def load_img(self, file_path):
         data = nib.load(file_path)

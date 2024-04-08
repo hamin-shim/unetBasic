@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from albumentations import Compose
 import os
 import numpy as np
+import nibabel as nib
 import torch.nn as nn
 
 
@@ -262,7 +263,6 @@ def jaccard_coef_metric_per_classes(probabilities: np.ndarray,  # output of the 
 
 
 def preprocess_mask_labels(mask):
-    print("before preprocess", mask.shape)
     # whole tumour
     mask_WT = mask.copy()
     mask_WT[mask_WT == 1] = 1
@@ -287,3 +287,10 @@ def preprocess_mask_labels(mask):
     # mask = np.stack([mask_WT, mask_TC, mask_ET, mask_ED])
     mask = np.stack([mask_WT, mask_TC, mask_ET])
     return mask
+
+
+def load_test_dataset(id_):
+    data = nib.load(os.path.join('brats_data', 'test', id_, id_+'-seg.nii.gz'))
+    data = np.asarray(data.dataobj)  # (240,240,155)
+    data = data.transpose(2, 0, 1)
+    return preprocess_mask_labels(data)
