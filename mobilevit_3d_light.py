@@ -6,9 +6,6 @@ from einops import rearrange
 
 def conv_1x1_bn(inp, oup):
     return nn.Sequential(
-        # nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
-        # nn.BatchNorm2d(oup),
-        # nn.SiLU()
         nn.Conv3d(inp, oup, 1, 1, 0, bias=False),
         nn.BatchNorm3d(oup),
         nn.SiLU()
@@ -17,9 +14,6 @@ def conv_1x1_bn(inp, oup):
 
 def conv_nxn_bn(inp, oup, kernal_size=3, stride=1):
     return nn.Sequential(
-        # nn.Conv2d(inp, oup, kernal_size, stride, 1, bias=False),
-        # nn.BatchNorm2d(oup),
-        # nn.SiLU()
         nn.Conv3d(inp, oup, kernal_size, stride, 1, bias=False),
         nn.BatchNorm3d(oup),
         nn.SiLU()
@@ -145,13 +139,11 @@ class MobileViTBlock(nn.Module):
         super().__init__()
         self.pd, self.ph, self.pw = patch_size
 
-        self.conv1 = conv_nxn_bn(channel, channel, kernel_size)
-        self.conv2 = conv_1x1_bn(channel, dim)
+        self.conv1 = conv_nxn_bn(channel, dim, kernel_size)
 
         self.transformer = Transformer(dim, depth, 4, 8, mlp_dim, dropout)
 
-        self.conv3 = conv_1x1_bn(dim, channel)
-        self.conv4 = conv_nxn_bn(2 * channel, channel, kernel_size)
+        self.conv2 = conv_nxn_bn(dim, channel, kernel_size)
 
     def forward(self, x):
         y = x.clone()
@@ -159,9 +151,6 @@ class MobileViTBlock(nn.Module):
         # Local representations
         x = self.conv1(x)
         # print("conv1", x.shape)
-        x = self.conv2(x)
-        # print("conv2", x.shape)
-
         # Global representations
         _, _, d, h, w = x.shape
         x = rearrange(x, 'b c (d pd) (h ph) (w pw) -> b (pd ph pw) (d h w) c',
@@ -174,124 +163,57 @@ class MobileViTBlock(nn.Module):
         # print("after rearrange 2", x.shape)
 
         # Fusion
-        x = self.conv3(x)
-        x = torch.cat((x, y), 1)
-        x = self.conv4(x)
+        x = self.conv2(x)
+        # print("conv2", x.shape)
         return x
 
 
 class MobileViT(nn.Module):
-    def __init__(self, image_size, dims, channels, num_classes, expansion=4, kernel_size=3, patch_size=(2, 2, 2)):
+    def __init__(self, image_size, dims, channels, expansion=4, kernel_size=3, patch_size=(2, 4, 4)):
         super().__init__()
         id, ih, iw = image_size
         pd, ph, pw = patch_size
         assert id % pd == 0 and ih % ph == 0 and iw % pw == 0
 
-        L = [2, 4, 3]
+        L = [2, 4]
 
         self.conv1 = conv_nxn_bn(3, channels[0], stride=1)
 
         self.mv2 = nn.ModuleList([])
-        self.mv2.append(MV2Block(channels[0], channels[1], 1, expansion))
-        self.mv2.append(
+        self.mv2.append(  # MV 0
+            MV2Block(channels[0], channels[1], (1, 2, 2), expansion))
+        self.mv2.append(  # MV 1
             MV2Block(channels[1], channels[2], (1, 2, 2), expansion))
-        self.mv2.append(MV2Block(channels[2], channels[3], 1, expansion))
-        self.mv2.append(
-            MV2Block(channels[2], channels[3], 1, expansion))   # Repeat
-        self.mv2.append(
+        self.mv2.append(  # MV 2 -> Vit0
+            MV2Block(channels[2], channels[3], (1, 2, 2), expansion))
+        self.mv2.append(  # MV 3 -> Vit1
             MV2Block(channels[3], channels[4], (1, 2, 2), expansion))
-        self.mv2.append(
-            MV2Block(channels[5], channels[6], (1, 2, 2), expansion))
-        self.mv2.append(
-            MV2Block(channels[7], channels[8], (1, 2, 2), expansion))
 
         self.mvit = nn.ModuleList([])
         self.mvit.append(MobileViTBlock(
-            dims[0], L[0], channels[5], kernel_size, patch_size, int(dims[0]*2)))
+            dims[0], L[0], channels[2], kernel_size, patch_size, int(dims[0]*2)))
         self.mvit.append(MobileViTBlock(
-            dims[1], L[1], channels[7], kernel_size, patch_size, int(dims[1]*4)))
-        self.mvit.append(MobileViTBlock(
-            dims[2], L[2], channels[9], kernel_size, patch_size, int(dims[2]*4)))
-
-        self.conv2 = conv_1x1_bn(channels[-2], channels[-1])
-
-        self.pool = nn.AvgPool2d(ih//32, 1)
-        self.fc = nn.Linear(channels[-1], num_classes, bias=False)
+            dims[1], L[1], channels[3], kernel_size, patch_size, int(dims[1]*4)))
 
     def forward(self, x):
         print("initial", x.shape)
+
         x = self.conv1(x)
         print("conv1", x.shape)
+
         x = self.mv2[0](x)
         print("mv2[0]", x.shape)
 
         x = self.mv2[1](x)
         print("mv2[1]", x.shape)
-        x = self.mv2[2](x)
-        print("mv2[2]", x.shape)
-        x = self.mv2[3](x)      # Repeat
-        print("mv2[3]", x.shape)
-
-        x = self.mv2[4](x)
-        print("mv2[4]", x.shape)
         x = self.mvit[0](x)
         print("mvit[0]", x.shape)
 
-        x = self.mv2[5](x)
-        print("mv2[5]", x.shape)
+        x = self.mv2[2](x)
+        print("mv2[2]", x.shape)
         x = self.mvit[1](x)
         print("mvit[1]", x.shape)
 
-        x = self.mv2[6](x)
-        print("mv2[6]", x.shape)
-        # x = self.mvit[2](x)
-        # print("mvit[2]", x.shape)
-        # x = self.conv2(x)
-        # print("conv2", x.shape)
-
-        # x = self.pool(x).view(-1, x.shape[1])
-        # print("pool", x.shape)
-        # x = self.fc(x)
-        # print("fc", x.shape)
+        x = self.mv2[3](x)
+        print("mv2[3]", x.shape)
         return x
-
-
-def mobilevit_xxs():
-    dims = [80, 96, 112]
-    channels = [16, 24, 32, 32, 64, 64, 128, 128, 256, 256]
-    return MobileViT((30, 256, 256), dims, channels, num_classes=1000, expansion=2)
-
-
-# def mobilevit_xs():
-#     dims = [96, 120, 144]
-#     channels = [16, 32, 48, 48, 64, 64, 80, 80, 96, 96, 384]
-#     return MobileViT((256, 256), dims, channels, num_classes=1000)
-
-
-# def mobilevit_s():
-#     dims = [144, 192, 240]
-#     channels = [16, 32, 64, 64, 96, 96, 128, 128, 160, 160, 640]
-#     return MobileViT((256, 256), dims, channels, num_classes=1000)
-
-
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-
-# if __name__ == '__main__':
-#     img = torch.randn(5, 3, 256, 256)
-
-#     vit = mobilevit_xxs()
-#     out = vit(img)
-#     print(out.shape)
-#     print(count_parameters(vit))
-
-#     vit = mobilevit_xs()
-#     out = vit(img)
-#     print(out.shape)
-#     print(count_parameters(vit))
-
-#     vit = mobilevit_s()
-#     out = vit(img)
-#     print(out.shape)
-#     print(count_parameters(vit))

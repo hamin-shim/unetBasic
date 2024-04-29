@@ -6,6 +6,7 @@ from utils import BCEDiceLoss
 import json
 from time import time
 import os
+import torch.nn as nn
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load model by state dict
@@ -14,8 +15,10 @@ data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
 in_channel = len(data_type)
 model_name = input('Model name to save:')
 n_channel = int(input("n channel?: "))
-model = UNet3d(in_channels=in_channel, n_classes=3,
-               n_channels=n_channel).to(device)
+_model = UNet3d(in_channels=in_channel, n_classes=3,
+                n_channels=n_channel).to(device)
+model = nn.DataParallel(_model).to(device)
+
 save_path = f'models/{model_name}'
 os.makedirs(save_path, exist_ok=True)
 os.makedirs(os.path.join(save_path, 'logs'), exist_ok=True)

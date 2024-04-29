@@ -46,7 +46,6 @@ class BratsDataset(Dataset):
         img = np.stack(images)
 
         if self.phase != "test":
-            # if self.phase != "test":
             mask_path = os.path.join(
                 self.data_path, self.phase, id_, id_+'-seg.nii.gz')
             mask = self.load_img(mask_path)  # (240,240,155), data:0~3
