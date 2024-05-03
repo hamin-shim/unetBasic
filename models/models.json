@@ -1,0 +1,62 @@
+[
+  {
+    "model_name": "int_2",
+    "depth": 78,
+    "in_channel": 3,
+    "n_channel": 24,
+    "img_size": 120,
+    "used_channel": ["-t1c.nii.gz", "-t1n.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [0.85, 0.75],
+    "batch/total epoch/best epoch": [4, 20, 0],
+    "resize_info": [0, 155, 2]
+  },
+  {
+    "model_name": "fch_32_interval_3",
+    "depth": 52,
+    "in_channel": 4,
+    "n_channel": 32,
+    "img_size": 120,
+    "used_channel": [
+      "-t1c.nii.gz",
+      "-t1n.nii.gz",
+      "-t2f.nii.gz",
+      "-t2w.nii.gz"
+    ],
+    "val score(dice/jaccard)": [0.85, 0.76],
+    "batch/total epoch/best epoch": [4, 100, 70],
+    "resize_info": [0, 155, 3]
+  },
+  {
+    "model_name": "fch_32_interval_2",
+    "depth": 78,
+    "in_channel": 3,
+    "n_channel": 32,
+    "img_size": 120,
+    "used_channel": ["-t1c.nii.gz", "-t1n.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [0.87, 0.78],
+    "batch/total epoch/best epoch": [3, 100, 93],
+    "resize_info": [0, 155, 2]
+  },
+  {
+    "model_name": "ch3_24_interval_4",
+    "depth": 39,
+    "in_channel": 3,
+    "n_channel": 24,
+    "img_size": 240,
+    "used_channel": ["-t1c.nii.gz", "-t1n.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [0.87, 0.79],
+    "batch/total epoch/best epoch": [2, 50, 37],
+    "resize_info": [0, 155, 4]
+  },
+  {
+    "model_name": "ch3_32_interval_3",
+    "depth": 52,
+    "in_channel": 3,
+    "n_channel": 32,
+    "img_size": 240,
+    "used_channel": ["-t1c.nii.gz", "-t1n.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [0.88, 0.81],
+    "batch/total epoch/best epoch": [1, 50, 33],
+    "resize_info": [0, 155, 3]
+  }
+]
