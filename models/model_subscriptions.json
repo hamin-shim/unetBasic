@@ -1,1 +1,96 @@
-[{"model_name": "model_revised_interval_3", "depth / img_size / in_channel / n_channel": [52, 120, 4, 24], "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2w.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [0.875, 0.785], "batch/total epoch/best epoch": [4, 100, "?"], "resize_info": [0, 155, 2], "run time(m)": 492}, {"model_name": "int_2", "depth / in_channel / n_channel": [78, 3, 24], "img_size": 120, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [0.849, 0.754], "batch/total epoch/best epoch": [4, 20, 16], "resize_info": [0, 155, 2], "run time(m)": 147}, {"model_name": "fch_32_interval_3", "depth / in_channel / n_channel": [52, 3, 32], "img_size": 120, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [56, 41], "batch/total epoch/best epoch": [4, 1, 0], "resize_info": [0, 155, 3], "run time(m)": 1683518323.9370763}, {"model_name": "fch_32_interval_3", "depth / in_channel / n_channel": [52, 3, 32], "img_size": 120, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [85, 76], "batch/total epoch/best epoch": [4, 100, 70], "resize_info": [0, 155, 3], "run time(m)": 625.0}, {"model_name": "fch_32_interval_2", "depth / in_channel / n_channel": [78, 3, 32], "img_size": 120, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [87, 78], "batch/total epoch/best epoch": [3, 100, 93], "resize_info": [0, 155, 2], "run time(m)": 884.0}, {"model_name": "ch3_24_interval_4_240", "depth / in_channel / n_channel": [39, 3, 24], "img_size": 240, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [87, 79], "batch/total epoch/best epoch": [2, 50, 37], "resize_info": [0, 155, 4], "run time(m)": 668.0}, {"model_name": "ch3_32_interval_3_240", "depth / in_channel / n_channel": [52, 3, 32], "img_size": 240, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [88, 81], "batch/total epoch/best epoch": [1, 50, 33], "resize_info": [0, 155, 3], "run time(m)": 1360.0}, {"model_name": "ch3_32_interval_3_256", "depth / in_channel / n_channel": [52, 3, 32], "img_size": 256, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [58, 42], "batch/total epoch/best epoch": [2, 1, 0], "resize_info": [0, 155, 3], "run time(m)": 17.0}, {"model_name": "ch3_32_interval_3_256 ", "depth / in_channel / n_channel": [52, 3, 32], "img_size": 256, "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"], "val score(dice/jaccard)": [85, 76], "batch/total epoch/best epoch": [2, 100, 81], "resize_info": [0, 155, 3], "run time(m)": 1811.0}]
+[
+  {
+    "model_name": "model_revised_interval_3",
+    "depth / img_size / in_channel / n_channel": [52, 120, 4, 24],
+    "used_channel": [
+      "-t1n.nii.gz",
+      "-t1c.nii.gz",
+      "-t2w.nii.gz",
+      "-t2f.nii.gz"
+    ],
+    "val score(dice/jaccard)": [0.875, 0.785],
+    "batch/total epoch/best epoch": [4, 100, "?"],
+    "resize_info": [0, 155, 2],
+    "run time(m)": 492
+  },
+  {
+    "model_name": "int_2",
+    "depth / in_channel / n_channel": [78, 3, 24],
+    "img_size": 120,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [0.849, 0.754],
+    "batch/total epoch/best epoch": [4, 20, 16],
+    "resize_info": [0, 155, 2],
+    "run time(m)": 147
+  },
+  {
+    "model_name": "fch_32_interval_3",
+    "depth / in_channel / n_channel": [52, 3, 32],
+    "img_size": 120,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [56, 41],
+    "batch/total epoch/best epoch": [4, 1, 0],
+    "resize_info": [0, 155, 3],
+    "run time(m)": 1683518323.9370763
+  },
+  {
+    "model_name": "fch_32_interval_3",
+    "depth / in_channel / n_channel": [52, 3, 32],
+    "img_size": 120,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [85, 76],
+    "batch/total epoch/best epoch": [4, 100, 70],
+    "resize_info": [0, 155, 3],
+    "run time(m)": 625.0
+  },
+  {
+    "model_name": "fch_32_interval_2",
+    "depth / in_channel / n_channel": [78, 3, 32],
+    "img_size": 120,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [87, 78],
+    "batch/total epoch/best epoch": [3, 100, 93],
+    "resize_info": [0, 155, 2],
+    "run time(m)": 884.0
+  },
+  {
+    "model_name": "ch3_24_interval_4_240",
+    "depth / in_channel / n_channel": [39, 3, 24],
+    "img_size": 240,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [87, 79],
+    "batch/total epoch/best epoch": [2, 50, 37],
+    "resize_info": [0, 155, 4],
+    "run time(m)": 668.0
+  },
+  {
+    "model_name": "ch3_32_interval_3_240",
+    "depth / in_channel / n_channel": [52, 3, 32],
+    "img_size": 240,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [88, 81],
+    "batch/total epoch/best epoch": [1, 50, 33],
+    "resize_info": [0, 155, 3],
+    "run time(m)": 1360.0
+  },
+  {
+    "model_name": "ch3_32_interval_3_256",
+    "depth / in_channel / n_channel": [52, 3, 32],
+    "img_size": 256,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [58, 42],
+    "batch/total epoch/best epoch": [2, 1, 0],
+    "resize_info": [0, 155, 3],
+    "run time(m)": 17.0
+  },
+  {
+    "model_name": "ch3_32_interval_3_256 ",
+    "depth / in_channel / n_channel": [52, 3, 32],
+    "img_size": 256,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [85, 76],
+    "batch/total epoch/best epoch": [2, 100, 81],
+    "resize_info": [0, 155, 3],
+    "run time(m)": 1811.0
+  }
+]
