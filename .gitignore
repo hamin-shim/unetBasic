@@ -1,6 +1,7 @@
 brats_data
 logs
 saved_model
+models
 *.pth
 *.csv
 *.pyc
