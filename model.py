@@ -111,7 +111,8 @@ class UNet3d(nn.Module):
         mask = self.dec3(mask, x2)
         mask = self.dec4(mask, x1)
         mask = self.out(mask)
-
+        mask = F.interpolate(mask, size=(155, 240, 240),
+                             mode='trilinear', align_corners=False)
         """
         After a series of either Upsampling / 3d Transpose
         a segmented image of the input image is generated 

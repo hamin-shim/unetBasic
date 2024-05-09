@@ -25,6 +25,7 @@ class BratsDataset(Dataset):
     def __getitem__(self, idx):
         # at a specified index ( idx ) select the value under 'Brats20ID' & asssign it to id_
         id_ = self.ids[idx]
+        print(id_)
 
         # load all modalities
         images = []
@@ -54,7 +55,8 @@ class BratsDataset(Dataset):
             if self.is_resize:
                 # (155,240,240) -> (??,240,240) -> (3,??,240,240) -> (3,??,120,120)
                 mask = mask.transpose(2, 0, 1)  # mask.shape = (155,240,240)
-                mask = self.resize_mask(mask)
+                mask = self.preprocess_mask_labels(mask)
+                # mask = self.resize_mask(mask)
             augmented = self.augmentations(image=img.astype(np.float32),
                                            mask=mask.astype(np.float32))
             # Several augmentations / transformations like flipping, rotating, padding will be applied to both the images

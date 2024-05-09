@@ -5,6 +5,7 @@ import os
 import numpy as np
 import nibabel as nib
 import torch.nn as nn
+from tqdm import tqdm
 
 
 def get_augmentations(phase):
@@ -294,3 +295,44 @@ def load_test_dataset(id_):
     data = np.asarray(data.dataobj)  # (240,240,155)
     data = data.transpose(2, 0, 1)
     return preprocess_mask_labels(data)
+
+
+def compute_scores_per_classes(model, model_name,          # nodel which is UNeT3D
+                               # tuple consisting of ( id , image tensor , mask tensor )
+                               dataloader,
+                               classes, threshold=0.33):       # classes : WT , TC , ET
+    """
+    Compute Dice and Jaccard coefficients for each class.
+    Params:
+        model: neural net for make predictions.
+        dataloader: dataset object to load data from.
+        classes: list with classes.
+        Returns: dictionaries with dice and jaccard coefficients for each class for each slice.
+    """
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    dice_scores_per_classes = {key: list() for key in classes}
+    iou_scores_per_classes = {key: list() for key in classes}
+
+    with torch.no_grad():
+        for i, data in tqdm(enumerate(dataloader), total=len(dataloader), desc=model_name):
+            imgs, targets = data['image'], data['mask']
+            imgs, targets = imgs.to(device), targets.to(device)
+            logits = model(imgs)
+            probabilities = torch.sigmoid(logits)
+            prediction = (probabilities >= threshold).float()
+            prediction = prediction.detach().cpu().numpy()
+
+            targets = targets.detach().cpu().numpy()
+
+            # Now finding the overlap between the raw prediction i.e. logit & the mask i.e. target & finding the dice & iou scores
+            dice_scores = dice_coef_metric_per_classes(prediction, targets)
+            iou_scores = jaccard_coef_metric_per_classes(prediction, targets)
+
+            # storing both dice & iou scores in the list declared
+            for key in dice_scores.keys():
+                dice_scores_per_classes[key].extend(dice_scores[key])
+
+            for key in iou_scores.keys():
+                iou_scores_per_classes[key].extend(iou_scores[key])
+
+    return dice_scores_per_classes, iou_scores_per_classes

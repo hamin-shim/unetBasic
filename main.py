@@ -7,11 +7,12 @@ import json
 from time import time
 import os
 import torch.nn as nn
-
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"  # Set the GPUs 2 and 3 to use
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load model by state dict
-data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
-# data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
+# data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
+data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
 in_channel = len(data_type)
 model_name = input('Model name to save:')
 n_channel = int(input("n channel?: "))
@@ -58,15 +59,14 @@ torch.save(model, f'{save_path}/{model_name}.pth')
 # Save model description
 model_scription = {
     'model_name': model_name,
-    'depth / in_channel / n_channel': [len(resize_data), in_channel, n_channel],
+    'in_channel': in_channel,
+    'n_channel': n_channel,
     'img_size': img_width,
     "used_channel": data_type,
     'val score(dice/jaccard)': [int(trainer.dice_scores['val'][-1]*100), int(trainer.jaccard_scores['val'][-1]*100)],
     'batch/total epoch/best epoch': [batch_size, epoch, trainer.best_epoch],
-    'resize_info': resize_info,
     'run time(m)': (end_time-start_time)//60,
 }
-
 with open('models/model_subscriptions.json', 'r') as f:
     data = json.load(f)
 data.append(model_scription)

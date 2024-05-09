@@ -92,5 +92,15 @@
     "batch/total epoch/best epoch": [2, 100, 81],
     "resize_info": [0, 155, 3],
     "run time(m)": 1811.0
+  },
+  {
+    "model_name": "fit_test_2",
+    "in_channel": 3,
+    "n_channel": 24,
+    "img_size": 120,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [20, 13],
+    "batch/total epoch/best epoch": [4, 2, 1],
+    "run time(m)": 17.0
   }
 ]
