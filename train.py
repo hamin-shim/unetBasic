@@ -44,7 +44,7 @@ class Trainer:
                  num_epochs: int,
                  path_to_log: str,
                  model_name: str,
-                 resize_info: list,
+                 img_depth: int,
                  img_width: int,
                  display_plot: bool = True,
                  ):
@@ -69,7 +69,7 @@ class Trainer:
                 dataset=dataset, data_type=data_type,
                 phase=phase,
                 batch_size=batch_size,
-                resize_info=resize_info,
+                img_depth=img_depth,
                 img_width=img_width,
                 num_workers=4
             )
@@ -101,9 +101,9 @@ class Trainer:
         return loss, logits
 
     def _do_epoch(self, epoch: int, phase: str):
-        with open(f'{self.path_to_log}/train_log({self.model_name}).txt', 'a') as f:
-            f.write(
-                f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}\n")
+        # with open(f'{self.path_to_log}/train_log({self.model_name}).txt', 'a') as f:
+        #     f.write(
+        #         f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}\n")
 
         self.net.train() if phase == "train" else self.net.eval()
         meter = Meter()
@@ -150,8 +150,8 @@ class Trainer:
                 val_loss = self._do_epoch(epoch, "val")
                 print(f"BCEDiceLoss for epoch {epoch} is : ", val_loss)
                 self.scheduler.step(val_loss)
-            if self.display_plot:
-                self._plot_train_history()
+            # if self.display_plot:
+            #     self._plot_train_history()
 
             if val_loss < self.best_loss:
                 print(f"\n{'#'*20}\nSaved new checkpoint\n{'#'*20}\n")

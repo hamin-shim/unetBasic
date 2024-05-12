@@ -102,10 +102,15 @@ class UNet3d(nn.Module):
 
     def forward(self, x):
         x1 = self.conv(x)
+        # print(x1.shape)
         x2 = self.enc1(x1)
+        # print(x2.shape)
         x3 = self.enc2(x2)
+        # print(x3.shape)
         x4 = self.enc3(x3)
+        # print(x4.shape)
         x5 = self.enc4(x4)
+        # print(x5.shape)
         mask = self.dec1(x5, x4)
         mask = self.dec2(mask, x3)
         mask = self.dec3(mask, x2)

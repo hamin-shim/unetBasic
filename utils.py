@@ -1,37 +1,44 @@
 import torch
 from torch.utils.data import DataLoader
-from albumentations import Compose
+# from albumentations import Compose
 import os
 import numpy as np
 import nibabel as nib
 import torch.nn as nn
 from tqdm import tqdm
-import albumentations as A
+# import albumentations as A
+from volumentations import *
 
 
 def get_augmentations(phase):
     list_transforms = []
     if (phase == 'train'):
         list_transforms = [
-            A.HorizontalFlip(p=0.3),
-            A.VerticalFlip(p=0.3),
-            A.GaussianBlur(p=0.3),
+            Flip(p=0.25),
+            RandomRotate90((2, 3), p=0.25),
+            GaussianNoise(var_limit=(0, 0.002), p=0.25),
+            RandomGamma(gamma_limit=(80, 120), p=0.25),
+            ElasticTransform((0, 0.25), interpolation=2, p=0.25),
+            # HorizontalFlip(p=0.3),
+            # VerticalFlip(p=0.3),
+            # GaussianBlur(p=0.3),
         ]
     # Does data augmentations & tranformation required for IMAGES & MASKS
     # they include cropping, padding, flipping , rotating
-    list_trfms = Compose(list_transforms, is_check_shapes=False)
+    list_trfms = Compose(list_transforms)
+    # list_trfms = Compose(list_transforms, is_check_shapes=False)
     return list_trfms
 
 
 def get_dataloader(
         dataset: torch.utils.data.Dataset,
         phase: str,
-        resize_info: list, img_width: int, data_type: list,
+        img_depth: int, img_width: int, data_type: list,
         batch_size: int = 4,
         num_workers: int = 4):
     ids = os.listdir(os.path.join("brats_data", phase))
     ds = dataset(data_path='brats_data', data_type=data_type, phase=phase, ids=ids, img_width=img_width,
-                 is_resize=True, resize_info=resize_info)
+                 is_resize=True, img_depth=img_depth)
     """
     DataLoader iteratively goes through every id in the df & gets all the individual tuples for individual ids & appends all of them 
     like this : 

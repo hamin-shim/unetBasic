@@ -7,37 +7,34 @@ import json
 from time import time
 import os
 import torch.nn as nn
+import warnings
+
+# 모든 경고 무시
+warnings.filterwarnings("ignore")
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # Set the GPUs 2 and 3 to use
+os.environ["CUDA_VISIBLE_DEVICES"] = "1, 0"  # Set the GPUs 2 and 3 to use
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# Load model by state dict
+
+# Config model (epoch, batch, image resizing info)
+epoch = 100
+batch_size = 4
+img_depth = 64
+img_width = 128
+n_channel = 32
 data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
 # data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
 in_channel = len(data_type)
-model_name = input('Model name to save:')
-n_channel = int(input("n channel?: "))
-model = UNet3d(in_channels=in_channel, n_classes=3,
-               n_channels=n_channel).to(device)
-# model = nn.DataParallel(_model).to(device)
+model_feature = input('Model feature to name:')
+model_name = f"{model_feature}_n{n_channel}_d{img_depth}_w{img_width}_b{batch_size}_e{epoch}"
+_model = UNet3d(in_channels=in_channel, n_classes=3,
+                n_channels=n_channel).to(device)
+model = nn.DataParallel(_model).to(device)
 
 save_path = f'models/{model_name}'
 os.makedirs(save_path, exist_ok=True)
 os.makedirs(os.path.join(save_path, 'logs'), exist_ok=True)
 os.makedirs(os.path.join(save_path, 'plots'), exist_ok=True)
-
-# Config model (epoch, batch, image resizing info)
-epoch = int(input('Epoch: '))
-batch_size = int(input('Batch size: '))
-img_width = int(input("Resized img width and height?: "))
-resize_info = [int(_) for _ in input(
-    "Enter resizing start, end, interval: ").split(',')]
-resize_data = [[cut_idx, real_idx]
-               for cut_idx, real_idx in enumerate(range(*resize_info))]
-print(f"Data will be resized to ({len(resize_data)},{img_width},{img_width})")
-
-# Save slicing map info
-with open(f'{save_path}/mapping_{model_name}.json', 'w') as f:
-    json.dump(resize_data, f)
 
 trainer = Trainer(net=model, data_type=data_type,
                   dataset=BratsDataset,
@@ -46,7 +43,7 @@ trainer = Trainer(net=model, data_type=data_type,
                   accumulation_steps=4,
                   batch_size=batch_size,
                   num_epochs=epoch,
-                  path_to_log=os.path.join(save_path, 'logs'), model_name=model_name, resize_info=resize_info, img_width=img_width)
+                  path_to_log=os.path.join(save_path, 'logs'), model_name=model_name, img_depth=img_depth, img_width=img_width)
 
 start_time = time()
 trainer.run()
@@ -61,6 +58,7 @@ model_scription = {
     'model_name': model_name,
     'in_channel': in_channel,
     'n_channel': n_channel,
+    'img_depth': img_depth,
     'img_size': img_width,
     "used_channel": data_type,
     'val score(dice/jaccard)': [int(trainer.dice_scores['val'][-1]*100), int(trainer.jaccard_scores['val'][-1]*100)],
