@@ -6,11 +6,17 @@ import numpy as np
 import nibabel as nib
 import torch.nn as nn
 from tqdm import tqdm
+import albumentations as A
 
 
 def get_augmentations(phase):
     list_transforms = []
-
+    if (phase == 'train'):
+        list_transforms = [
+            A.HorizontalFlip(p=0.3),
+            A.VerticalFlip(p=0.3),
+            A.GaussianBlur(p=0.3),
+        ]
     # Does data augmentations & tranformation required for IMAGES & MASKS
     # they include cropping, padding, flipping , rotating
     list_trfms = Compose(list_transforms, is_check_shapes=False)
@@ -23,7 +29,6 @@ def get_dataloader(
         resize_info: list, img_width: int, data_type: list,
         batch_size: int = 4,
         num_workers: int = 4):
-
     ids = os.listdir(os.path.join("brats_data", phase))
     ds = dataset(data_path='brats_data', data_type=data_type, phase=phase, ids=ids, img_width=img_width,
                  is_resize=True, resize_info=resize_info)

@@ -7,11 +7,14 @@ from utils import get_augmentations
 
 
 class BratsDataset(Dataset):
-    def __init__(self, data_path, data_type: list = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz'], phase: str = "train", ids: list = [], img_width=120, is_resize: bool = True, resize_info: list = []):
+    def __init__(self, data_path, data_type: list = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz'], phase: str = "train", ids: list = [], img_width=120, is_resize: bool = True, resize_info: list = [], aug=False):
         self.data_path = data_path
         self.phase = phase
         self.ids = ids
-        self.augmentations = get_augmentations(phase)
+        if (aug):
+            self.augmentations = get_augmentations('aug')
+        else:
+            self.augmentations = get_augmentations(phase)
         self.data_types = data_type
         # self.data_types = ['-t1n.nii.gz',
         #                    '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
@@ -25,7 +28,7 @@ class BratsDataset(Dataset):
     def __getitem__(self, idx):
         # at a specified index ( idx ) select the value under 'Brats20ID' & asssign it to id_
         id_ = self.ids[idx]
-        print(id_)
+        # print(id_)
 
         # load all modalities
         images = []

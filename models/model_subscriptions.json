@@ -102,5 +102,20 @@
     "val score(dice/jaccard)": [20, 13],
     "batch/total epoch/best epoch": [4, 2, 1],
     "run time(m)": 17.0
+  },
+  {
+    "model_name": "fit_fch_int_3",
+    "in_channel": 4,
+    "n_channel": 24,
+    "img_size": 160,
+    "used_channel": [
+      "-t1n.nii.gz",
+      "-t1c.nii.gz",
+      "-t2w.nii.gz",
+      "-t2f.nii.gz"
+    ],
+    "val score(dice/jaccard)": [87, 79],
+    "batch/total epoch/best epoch": [4, 25, 23],
+    "run time(m)": 299.0
   }
 ]

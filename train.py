@@ -158,7 +158,8 @@ class Trainer:
                 self.best_loss = val_loss
                 torch.save(self.net.state_dict(),
                            f"models/{self.model_name}/best-{self.model_name}.pth")
-                self.best_epoch = epoch
+            self.best_epoch = epoch
+            self._save_log()
         self._save_train_history()
 
     def _plot_train_history(self):
@@ -206,6 +207,19 @@ class Trainer:
         torch.save(self.net.state_dict(),
                    f"models/{self.model_name}/latest-{self.model_name}.pth")
 
+        logs_ = [self.losses, self.dice_scores, self.jaccard_scores]
+        log_names_ = ["_loss", "_dice", "_jaccard"]
+        logs = [logs_[i][key] for i in list(range(len(logs_)))
+                for key in logs_[i]]
+        log_names = [key+log_names_[i]
+                     for i in list(range(len(logs_)))
+                     for key in logs_[i]
+                     ]
+        pd.DataFrame(
+            dict(zip(log_names, logs))
+        ).to_csv(f"{self.path_to_log}/train_log({self.model_name}).csv", index=False)
+
+    def _save_log(self):
         logs_ = [self.losses, self.dice_scores, self.jaccard_scores]
         log_names_ = ["_loss", "_dice", "_jaccard"]
         logs = [logs_[i][key] for i in list(range(len(logs_)))

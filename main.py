@@ -8,17 +8,17 @@ from time import time
 import os
 import torch.nn as nn
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"  # Set the GPUs 2 and 3 to use
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # Set the GPUs 2 and 3 to use
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load model by state dict
-# data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
-data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
+data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
+# data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
 in_channel = len(data_type)
 model_name = input('Model name to save:')
 n_channel = int(input("n channel?: "))
-_model = UNet3d(in_channels=in_channel, n_classes=3,
-                n_channels=n_channel).to(device)
-model = nn.DataParallel(_model).to(device)
+model = UNet3d(in_channels=in_channel, n_classes=3,
+               n_channels=n_channel).to(device)
+# model = nn.DataParallel(_model).to(device)
 
 save_path = f'models/{model_name}'
 os.makedirs(save_path, exist_ok=True)
