@@ -150,8 +150,8 @@ class Trainer:
                 val_loss = self._do_epoch(epoch, "val")
                 print(f"BCEDiceLoss for epoch {epoch} is : ", val_loss)
                 self.scheduler.step(val_loss)
-            # if self.display_plot:
-            #     self._plot_train_history()
+            if self.display_plot:
+                self._plot_train_history()
 
             if val_loss < self.best_loss:
                 print(f"\n{'#'*20}\nSaved new checkpoint\n{'#'*20}\n")

@@ -8,3 +8,5 @@ models
 *.html
 *.pdf
 *.txt
+*.png
+*.xlsx

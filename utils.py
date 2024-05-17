@@ -12,17 +12,17 @@ from volumentations import *
 
 def get_augmentations(phase):
     list_transforms = []
-    if (phase == 'train'):
-        list_transforms = [
-            Flip(p=0.25),
-            RandomRotate90((2, 3), p=0.25),
-            GaussianNoise(var_limit=(0, 0.002), p=0.25),
-            RandomGamma(gamma_limit=(80, 120), p=0.25),
-            ElasticTransform((0, 0.25), interpolation=2, p=0.25),
-            # HorizontalFlip(p=0.3),
-            # VerticalFlip(p=0.3),
-            # GaussianBlur(p=0.3),
-        ]
+    # if (phase == 'train'):
+    #     list_transforms = [
+    #         Flip(p=0.25),
+    #         RandomRotate90((2, 3), p=0.25),
+    #         GaussianNoise(var_limit=(0, 0.002), p=0.25),
+    #         RandomGamma(gamma_limit=(80, 120), p=0.25),
+    #         ElasticTransform((0, 0.25), interpolation=2, p=0.25),
+    # HorizontalFlip(p=0.3),
+    # VerticalFlip(p=0.3),
+    # GaussianBlur(p=0.3),
+    # ]
     # Does data augmentations & tranformation required for IMAGES & MASKS
     # they include cropping, padding, flipping , rotating
     list_trfms = Compose(list_transforms)
@@ -36,7 +36,8 @@ def get_dataloader(
         img_depth: int, img_width: int, data_type: list,
         batch_size: int = 4,
         num_workers: int = 4):
-    ids = os.listdir(os.path.join("brats_data", phase))
+    # ids = os.listdir(os.path.join("brats_data", phase))
+    ids = ['BraTS-GLI-00715-001', 'BraTS-GLI-01085-000', 'BraTS-GLI-01161-000']
     ds = dataset(data_path='brats_data', data_type=data_type, phase=phase, ids=ids, img_width=img_width,
                  is_resize=True, img_depth=img_depth)
     """
@@ -148,7 +149,7 @@ class Meter:
         """
         dice = np.mean(self.dice_scores)
         iou = np.mean(self.iou_scores)
-        return dice, iou
+        return dice, iou  # type: ignore
 
 
 class DiceLoss(nn.Module):

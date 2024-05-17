@@ -117,5 +117,16 @@
     "val score(dice/jaccard)": [87, 79],
     "batch/total epoch/best epoch": [4, 25, 23],
     "run time(m)": 299.0
+  },
+  {
+    "model_name": "ppl_sm_d52_w128_b4_e50",
+    "in_channel": 3,
+    "n_channel": 32,
+    "img_depth": 52,
+    "img_size": 128,
+    "used_channel": ["-t1n.nii.gz", "-t1c.nii.gz", "-t2f.nii.gz"],
+    "val score(dice/jaccard)": [109, 125],
+    "batch/total epoch/best epoch": [4, 50, 49],
+    "run time(m)": 360.0
   }
 ]

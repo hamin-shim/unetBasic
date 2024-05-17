@@ -33,9 +33,9 @@ class BratsDataset(Dataset):
             img_path = os.path.join(
                 self.data_path, self.phase, id_, id_+data_type)
             img = self.load_img(img_path)
+            img = img.transpose(2, 0, 1)
 
             if self.is_resize:
-                img = img.transpose(2, 0, 1)
                 img = self.resize(img)
 
             img = self.normalize(img)
@@ -47,10 +47,11 @@ class BratsDataset(Dataset):
         mask_path = os.path.join(
             self.data_path, self.phase, id_, id_+'-seg.nii.gz')
         mask = self.load_img(mask_path)
-        mask = mask.astype(np.uint8)
 
         if self.is_resize:
             mask = mask.transpose(2, 0, 1)
+            # mask = self.resize(mask)
+            mask = mask.astype(np.uint8)
             mask = self.preprocess_mask_labels(mask)
         augmented = self.augmentations(image=img.astype(np.float32),
                                        mask=mask.astype(np.float32))
@@ -74,13 +75,14 @@ class BratsDataset(Dataset):
         return (data - data_min) / (np.max(data) - data_min)
 
     def resize(self, data: np.ndarray):
-        selected_data = random.sample(
-            range(0, data.shape[0]), self.img_depth)
-        selected_data.sort()
-        self.sel_data = selected_data
-        data = data[selected_data]
+        # selected_data = random.sample(
+        #     range(0, data.shape[0]), self.img_depth)
+        # selected_data.sort()
+        # self.sel_data = selected_data
+        # data = data[selected_data]
+        data = data[np.arange(0, 155, 3)]
         data = sk_resize(
-            data, (self.img_depth, self.img_width, self.img_width), preserve_range=True)
+            data, (data.shape[0], self.img_width, self.img_width), preserve_range=True)
         return data
 
     def preprocess_mask_labels(self, mask: np.ndarray):

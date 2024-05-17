@@ -1,4 +1,5 @@
-from model import UNet3d
+# from model import UNet3d
+from ppModel import UNETPP
 import torch
 from train import Trainer
 from dataset import BratsDataset
@@ -17,18 +18,29 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1, 0"  # Set the GPUs 2 and 3 to use
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Config model (epoch, batch, image resizing info)
-epoch = 100
+epoch = 50
 batch_size = 4
-img_depth = 64
+img_depth = 52
 img_width = 128
 n_channel = 32
 data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2f.nii.gz']
 # data_type = ['-t1n.nii.gz', '-t1c.nii.gz', '-t2w.nii.gz', '-t2f.nii.gz']
 in_channel = len(data_type)
 model_feature = input('Model feature to name:')
-model_name = f"{model_feature}_n{n_channel}_d{img_depth}_w{img_width}_b{batch_size}_e{epoch}"
-_model = UNet3d(in_channels=in_channel, n_classes=3,
-                n_channels=n_channel).to(device)
+model_name = f"{model_feature}_d{img_depth}_w{img_width}_b{batch_size}_e{epoch}"
+# model_name = f"{model_feature}_n{n_channel}_d{img_depth}_w{img_width}_b{batch_size}_e{epoch}"
+model_spec = {
+    "encoder": [
+        [16, 32],
+        [32, 64],
+        [64, 128],
+        [128, 256],
+    ],
+    'in_channel': 3, 'out_channel': 3
+}
+_model = UNETPP(model_spec).to(device)
+# _model = UNet3d(in_channels=in_channel, n_classes=3,
+#                 n_channels=n_channel).to(device)
 model = nn.DataParallel(_model).to(device)
 
 save_path = f'models/{model_name}'
